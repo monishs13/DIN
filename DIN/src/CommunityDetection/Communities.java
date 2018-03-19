@@ -17,11 +17,11 @@ public class Communities {
 		this.userName = map;
 	}
 	
-	public Node[] getCommunities()
+	public ArrayList<Node> getCommunities()
 	{
-		Node[] p = null;
+		ArrayList<Node> influentialNodes = new ArrayList<>();
 		ArrayList<ArrayList<Node>> communities = new ArrayList<>();
-		ArrayList<Node> importanceList = new ArrayList<Node>();
+		ArrayList<ArrayList<Node>> importanceList = new ArrayList<>();
 		int size = userData.length;
 		
 		for(int i=0; i<size; i++)
@@ -31,12 +31,27 @@ public class Communities {
 				tempNode.importance = NodeImportance(tempNode);
 				tempList.add(tempNode);
 				communities.add(tempList);
-				
-//				importanceList.add(tempList);
-//				continue from here
+				importanceList.add(tempList);
+		}
+		Collections.sort(importanceList, Node.importanceSort);
+		while(!importanceList.isEmpty())
+		{
+			Node center = importanceList.get(0).get(0);
+			ArrayList<Node> tempCommunity = border(center.id);
+			tempCommunity.add(center);
+			ArrayList<Node> finalCommunity = Extension(tempCommunity);
+			for(Node i : finalCommunity)
+			{
+				if(!influentialNodes.contains(i))
+				{
+					influentialNodes.add(i);
+				}
+			}
+			importanceList.remove(center);
 		}
 		
-		return p;
+		
+		return influentialNodes;
 	}
 	
 	private double NodeImportance(Node node) 

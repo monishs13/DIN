@@ -1,5 +1,6 @@
 package CommunityDetection;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 public class Node{
@@ -24,11 +25,11 @@ public class Node{
 		}
 	};
 	
-	public static Comparator<Node> importanceSort = new Comparator<Node>() {
+	public static Comparator<ArrayList<Node>> importanceSort = new Comparator<ArrayList<Node>>() {
 		@Override
-		public int compare(Node n1, Node n2)
+		public int compare(ArrayList<Node> n1, ArrayList<Node> n2)
 		{
-			return (int)(n2.importance-n1.importance);
+			return (int)(n2.get(1).importance-n1.get(1).importance);
 		}
 	};
 	
