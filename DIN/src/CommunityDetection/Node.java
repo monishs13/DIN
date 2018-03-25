@@ -33,5 +33,25 @@ public class Node{
 		}
 	};
 	
+	//New
+	
+	@Override
+	public boolean equals(Object comp)
+	{
+		boolean isSame = false;
+		
+		if(comp instanceof Node)
+		{
+			Node temp = (Node)comp;
+			isSame = temp.id==this.id;
+		}
+		return isSame;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return this.id;
+	}
 	
 }

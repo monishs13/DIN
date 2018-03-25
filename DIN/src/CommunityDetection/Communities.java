@@ -3,18 +3,22 @@ package CommunityDetection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+//import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Communities {
 	private int[][] userData;
 	private Node[] userListData;
 	private HashMap<Integer, String> userName;
+	public int[][] apspMatrix;
 	
 	public Communities(int[][] users, Node[] userList, HashMap<Integer, String> map)
 	{
 		this.userData = users;
 		this.userListData = userList;
 		this.userName = map;
+		this.apspMatrix = new int[users.length][users.length];
 	}
 	
 	public ArrayList<Node> getCommunities()
@@ -36,7 +40,8 @@ public class Communities {
 		Collections.sort(importanceList, Node.importanceSort);
 		while(!importanceList.isEmpty())
 		{
-			Node center = importanceList.get(0).get(0);
+			ArrayList<Node> centerList = importanceList.get(0);
+			Node center = centerList.get(0);
 			ArrayList<Node> tempCommunity = border(center.id);
 			tempCommunity.add(center);
 			ArrayList<Node> finalCommunity = Extension(tempCommunity);
@@ -47,7 +52,7 @@ public class Communities {
 					influentialNodes.add(i);
 				}
 			}
-			importanceList.remove(center);
+			importanceList.remove(centerList);
 		}
 		
 		
@@ -199,9 +204,60 @@ public class Communities {
 	}
 
 	private int distance(int id, ArrayList<Node> community) {
-		// TODO Auto-generated method stub
+		buildAPSP();
+		
 		return 0;
 	}
 	
+	private void buildAPSP()
+	{
+		for(int i=0;i<userData.length;i++)
+		{
+			dijkstra(i);
+		}
+	}
+
+	private void dijkstra(int source) {
+		Map<Integer, Integer> untouched=new HashMap<Integer, Integer>(userData.length);
+		Map<Integer, Integer> processed=new HashMap<Integer, Integer>(userData.length);
+		for(int i=0; i<userData.length;i++)
+		{
+			untouched.put(i,Integer.MAX_VALUE);
+		}
+		untouched.put(source, 0);
+		
+		int count=0;
+		int selectedIndex;
+		while(count!=userData.length)
+		{
+			selectedIndex=getMinimumvalueIndex(untouched);
+			for(int k=0;k<userData.length;k++)
+			{
+				if(userData[selectedIndex][k]!=0 && untouched.containsKey(k) && ((untouched.get(selectedIndex)+1) <= untouched.get(k)))
+				{
+					untouched.put(k, (untouched.get(selectedIndex)+1));
+				}
+			}
+			processed.put(selectedIndex, untouched.get(selectedIndex));
+			untouched.remove(selectedIndex);
+			count++;
+		}
+		for(int k=0;k<userData.length;k++)
+		{
+				apspMatrix[source][k]=processed.get(k);
+		}
+	}
+	
+	public static int getMinimumvalueIndex(Map<Integer, Integer> map)
+	{
+		int minValue= Collections.min(map.values());
+		int minIndex=-1;
+		for (Entry<Integer, Integer> entry : map.entrySet())
+		{
+		    if(entry.getValue() == minValue) minIndex=entry.getKey();
+		    if(minIndex!=-1) break;
+		}
+		return minIndex;
+	}
 	
 }
